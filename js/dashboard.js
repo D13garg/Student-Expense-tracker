@@ -6,7 +6,7 @@
  * in the browser tab title (see renderTitle() below).
  * ================================================================================= */
 function getDashboardTitle() {
-    return "Monthly Budget Dashboard";
+    return "Student Expense & Budget Dashboard";
 }
 /* ============================== END OF SHARED FUNCTION ============================ */
 
