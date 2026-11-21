@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SpendWise | Student Expense Tracker</title>
+  <link rel="icon" type="image/svg+xml" href="assets/images/logo.svg">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/responsive.css">
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar" id="sidebar" aria-label="Main navigation">
+    <div class="brand">
+      <img src="assets/images/logo.svg" alt="" width="34" height="34">
+      <span>SpendWise</span>
+    </div>
+    <nav class="nav">
+      <a href="#dashboard" class="nav-link" data-view="dashboard"><i class="fa-solid fa-table-columns"></i><span>Dashboard</span></a>
+      <a href="#transactions" class="nav-link" data-view="transactions"><i class="fa-solid fa-receipt"></i><span>Transactions</span></a>
+      <a href="#budget" class="nav-link" data-view="budget"><i class="fa-solid fa-bullseye"></i><span>Budget</span></a>
+      <a href="#analytics" class="nav-link" data-view="analytics"><i class="fa-solid fa-chart-line"></i><span>Analytics</span></a>
+      <a href="#settings" class="nav-link" data-view="settings"><i class="fa-solid fa-gear"></i><span>Settings</span></a>
+    </nav>
+    <p class="sidebar-note">Your data stays in this browser. Nothing is uploaded.</p>
+  </aside>
+  <div class="sidebar-overlay" id="sidebarOverlay"></div>
+
+  <div class="main">
+    <header class="topbar">
+      <button class="icon-btn menu-btn" id="menuBtn" aria-label="Open menu"><i class="fa-solid fa-bars"></i></button>
+      <div class="topbar-title" id="pageTitle">Dashboard</div>
+      <div class="topbar-actions">
+        <button class="icon-btn" id="themeToggle" aria-label="Switch to dark theme"><i class="fa-solid fa-moon"></i></button>
+        <button class="btn btn-primary" id="addTxBtn"><i class="fa-solid fa-plus"></i><span>Add transaction</span></button>
+      </div>
+    </header>
+
+    <main class="content">
+      <!-- DASHBOARD -->
+      <section class="view" id="view-dashboard">
+        <div class="page-head">
+          <div>
+            <h2 id="dashboardTitle">Student Expense Tracker</h2>
+            <p id="dashboardSubtitle" class="muted"></p>
+          </div>
+        </div>
+        <div id="budgetAlert" class="alert" hidden></div>
+        <div class="stats">
+          <article class="stat-card stat-balance"><div class="stat-icon"><i class="fa-solid fa-scale-balanced"></i></div><p class="stat-label">Total balance</p><p class="stat-value" id="statBalance">₹0</p></article>
+          <article class="stat-card"><div class="stat-icon income"><i class="fa-solid fa-arrow-trend-up"></i></div><p class="stat-label">Total income</p><p class="stat-value income" id="statIncome">₹0</p></article>
+          <article class="stat-card"><div class="stat-icon expense"><i class="fa-solid fa-arrow-trend-down"></i></div><p class="stat-label">Total expenses</p><p class="stat-value expense" id="statExpense">₹0</p></article>
+          <article class="stat-card"><div class="stat-icon"><i class="fa-solid fa-bullseye"></i></div><p class="stat-label">Monthly budget</p><p class="stat-value" id="statBudget">Not set</p></article>
+          <article class="stat-card"><div class="stat-icon"><i class="fa-solid fa-piggy-bank"></i></div><p class="stat-label">Remaining this month</p><p class="stat-value" id="statRemaining">—</p></article>
+          <article class="stat-card"><div class="stat-icon"><i class="fa-solid fa-gauge-high"></i></div><p class="stat-label">Budget used</p><p class="stat-value" id="statUtilization">—</p></article>
+        </div>
+        <div class="grid-2">
+          <section class="panel">
+            <h3>This month's budget</h3>
+            <div class="progress progress-lg"><div class="progress-fill" id="dashBudgetBar"></div></div>
+            <p class="muted" id="dashBudgetText"></p>
+            <h3 class="mt">Top spending this month</h3>
+            <div id="topCategories"></div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h3>Recent transactions</h3><a href="#transactions" class="link">View all</a></div>
+            <ul class="tx-list" id="recentList"></ul>
+            <div class="empty" id="recentEmpty" hidden>
+              <i class="fa-solid fa-wallet"></i>
+              <p>No transactions yet.</p>
+              <div class="empty-actions">
+                <button class="btn btn-primary" data-open-form>Add your first transaction</button>
+                <button class="btn btn-ghost" data-load-sample>Load sample data</button>
+              </div>
+            </div>
+          </section>
+        </div>
+      </section>
+
+      <!-- TRANSACTIONS -->
+      <section class="view" id="view-transactions">
+        <div class="page-head">
+          <div><h2>Transactions</h2><p class="muted" id="txCount"></p></div>
+          <button class="btn btn-ghost" id="exportCsv"><i class="fa-solid fa-file-csv"></i><span>Export CSV</span></button>
+        </div>
+        <div class="panel filters">
+          <div class="field grow"><label for="searchInput">Search</label><input type="search" id="searchInput" placeholder="Description, notes or category"></div>
+          <div class="field"><label for="filterType">Type</label>
+            <select id="filterType"><option value="all">All types</option><option value="expense">Expense</option><option value="income">Income</option></select></div>
+          <div class="field"><label for="filterCategory">Category</label><select id="filterCategory"></select></div>
+          <div class="field"><label for="filterFrom">From</label><input type="date" id="filterFrom"></div>
+          <div class="field"><label for="filterTo">To</label><input type="date" id="filterTo"></div>
+          <div class="field"><label for="filterSort">Sort by</label>
+            <select id="filterSort">
+              <option value="date-desc">Date: newest first</option><option value="date-asc">Date: oldest first</option>
+              <option value="amount-desc">Amount: high to low</option><option value="amount-asc">Amount: low to high</option>
+            </select></div>
+          <button class="btn btn-ghost" id="clearFilters"><i class="fa-solid fa-filter-circle-xmark"></i><span>Clear</span></button>
+        </div>
+        <div class="panel table-panel">
+          <div class="table-wrap" id="txTableWrap">
+            <table class="tx-table">
+              <thead><tr><th>Date</th><th>Description</th><th>Category</th><th>Type</th><th class="right">Amount</th><th class="right">Actions</th></tr></thead>
+              <tbody id="txBody"></tbody>
+            </table>
+          </div>
+          <div class="empty" id="txEmpty" hidden>
+            <i class="fa-solid fa-receipt"></i>
+            <p>You haven't recorded anything yet.</p>
+            <div class="empty-actions">
+              <button class="btn btn-primary" data-open-form>Add transaction</button>
+              <button class="btn btn-ghost" data-load-sample>Load sample data</button>
+            </div>
+          </div>
+          <div class="empty" id="txNoMatch" hidden>
+            <i class="fa-solid fa-magnifying-glass"></i>
+            <p>No transactions match these filters.</p>
+            <button class="btn btn-ghost" data-clear-filters>Clear filters</button>
+          </div>
+        </div>
+      </section>
+
+      <!-- BUDGET -->
+      <section class="view" id="view-budget">
+        <div class="page-head"><div><h2>Budget</h2><p class="muted">Limits apply to every calendar month and track the current month.</p></div></div>
+        <div class="grid-2">
+          <section class="panel">
+            <h3>Monthly budget</h3>
+            <div id="budgetSummary"></div>
+            <div class="field mt"><label for="monthlyBudgetInput">Monthly budget (₹)</label>
+              <div class="inline-form">
+                <input type="number" id="monthlyBudgetInput" min="0" step="1" inputmode="decimal" placeholder="e.g. 15000">
+                <button class="btn btn-primary" id="saveMonthlyBudget">Save budget</button>
+              </div>
+              <small class="error" id="monthlyBudgetError"></small>
+              <small class="muted">Leave empty or enter 0 to remove the budget.</small>
+            </div>
+          </section>
+          <section class="panel">
+            <div class="panel-head"><h3>Category limits</h3><button class="btn btn-primary btn-sm" id="saveCategoryBudgets">Save limits</button></div>
+            <div id="categoryBudgets"></div>
+            <small class="error" id="categoryBudgetError"></small>
+          </section>
+        </div>
+      </section>
+
+      <!-- ANALYTICS -->
+      <section class="view" id="view-analytics">
+        <div class="page-head"><div><h2>Analytics</h2><p class="muted">Charts update automatically as you add, edit or delete transactions.</p></div></div>
+        <div class="grid-2">
+          <section class="panel chart-card">
+            <div class="panel-head"><h3>Spending by category</h3>
+              <select id="doughnutPeriod" aria-label="Period"><option value="month">This month</option><option value="all">All time</option></select></div>
+            <div class="chart-box"><canvas id="chartCategory"></canvas></div>
+            <div class="chart-empty" hidden><i class="fa-solid fa-chart-pie"></i><p>No expenses to show for this period.</p></div>
+          </section>
+          <section class="panel chart-card">
+            <h3>Income vs expenses (6 months)</h3>
+            <div class="chart-box"><canvas id="chartMonthly"></canvas></div>
+            <div class="chart-empty" hidden><i class="fa-solid fa-chart-column"></i><p>Add transactions to compare income and expenses.</p></div>
+          </section>
+        </div>
+        <section class="panel chart-card">
+          <h3>Monthly spending trend</h3>
+          <div class="chart-box tall"><canvas id="chartTrend"></canvas></div>
+          <div class="chart-empty" hidden><i class="fa-solid fa-chart-line"></i><p>Your spending trend appears once you record expenses.</p></div>
+        </section>
+      </section>
+
+      <!-- SETTINGS -->
+      <section class="view" id="view-settings">
+        <div class="page-head"><div><h2>Settings</h2></div></div>
+        <div class="grid-2">
+          <section class="panel">
+            <h3>Budget warning</h3>
+            <div class="field"><label for="thresholdInput">Warn me when this % of the budget is used</label>
+              <div class="inline-form"><input type="number" id="thresholdInput" min="50" max="99" step="1">
+              <button class="btn btn-primary" id="saveSettings">Save</button></div>
+              <small class="error" id="thresholdError"></small>
+              <small class="muted">Choose a value from 50 to 99. Currency is fixed to Indian rupees (₹).</small></div>
+          </section>
+          <section class="panel">
+            <h3>Data</h3>
+            <p class="muted">Sample data adds six months of example transactions so you can explore the charts.</p>
+            <div class="empty-actions left">
+              <button class="btn btn-ghost" data-load-sample><i class="fa-solid fa-flask"></i> Load sample data</button>
+              <button class="btn btn-danger" id="clearAll"><i class="fa-solid fa-trash"></i> Delete all data</button>
+            </div>
+          </section>
+        </div>
+      </section>
+    </main>
+  </div>
+</div>
+
+<!-- Transaction modal -->
+<div class="modal" id="txModal" role="dialog" aria-modal="true" aria-labelledby="txModalTitle" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card">
+    <div class="modal-head"><h3 id="txModalTitle">Add transaction</h3><button class="icon-btn" data-close aria-label="Close"><i class="fa-solid fa-xmark"></i></button></div>
+    <form id="txForm" novalidate>
+      <input type="hidden" name="id">
+      <div class="segmented" role="radiogroup" aria-label="Transaction type">
+        <label><input type="radio" name="type" value="expense" checked><span>Expense</span></label>
+        <label><input type="radio" name="type" value="income"><span>Income</span></label>
+      </div>
+      <div class="field"><label for="fDescription">Description</label><input id="fDescription" name="description" type="text" maxlength="80" placeholder="e.g. Canteen lunch"><small class="error" data-error="description"></small></div>
+      <div class="row-2">
+        <div class="field"><label for="fAmount">Amount (₹)</label><input id="fAmount" name="amount" type="number" step="0.01" min="0" inputmode="decimal" placeholder="0.00"><small class="error" data-error="amount"></small></div>
+        <div class="field"><label for="fDate">Date</label><input id="fDate" name="date" type="date"><small class="error" data-error="date"></small></div>
+      </div>
+      <div class="field"><label for="fCategory">Category</label><select id="fCategory" name="category"></select><small class="error" data-error="category"></small></div>
+      <div class="field"><label for="fNotes">Notes (optional)</label><textarea id="fNotes" name="notes" rows="2" maxlength="200" placeholder="Anything worth remembering"></textarea><small class="error" data-error="notes"></small></div>
+      <div class="modal-foot"><button type="button" class="btn btn-ghost" data-close>Cancel</button><button type="submit" class="btn btn-primary" id="txSubmit">Save transaction</button></div>
+    </form>
+  </div>
+</div>
+
+<!-- Confirm modal -->
+<div class="modal" id="confirmModal" role="alertdialog" aria-modal="true" aria-labelledby="confirmTitle" aria-hidden="true">
+  <div class="modal-backdrop" data-close></div>
+  <div class="modal-card small">
+    <h3 id="confirmTitle">Are you sure?</h3>
+    <p class="muted" id="confirmMessage"></p>
+    <div class="modal-foot"><button class="btn btn-ghost" data-close id="confirmCancel">Cancel</button><button class="btn btn-danger" id="confirmOk">Confirm</button></div>
+  </div>
+</div>
+
+<div class="toast-container" id="toastContainer" aria-live="polite"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+<script src="js/utils.js"></script>
+<script src="js/storage.js"></script>
+<script src="js/dashboard.js"></script>
+<script src="js/expenses.js"></script>
+<script src="js/budget.js"></script>
+<script src="js/charts.js"></script>
+<script src="js/sample-data.js"></script>
+<script src="js/app.js"></script>
+</body>
+</html>
