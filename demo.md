@@ -267,4 +267,3 @@ Use screenshots taken during my own work. Suggested evidence:
 - **No conflict appears:** Check that both branches were created from the same starting commit and that each changed the same return line differently. Do not create the second branch from the already-merged `main`.
 - **Git says the working tree is not clean:** Check `git status` and commit or safely set aside unrelated changes before switching branches.
 - **The merge is in progress and I need to cancel it:** `git merge --abort` returns the repository to the state before the current merge attempt. Use this only if I want to abandon that attempt and try again.
-- **The final title does not appear in the browser:** Save the file and refresh the page. Check the browser console if the page reports an error.
