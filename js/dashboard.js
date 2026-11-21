@@ -6,7 +6,7 @@
  * in the browser tab title (see renderTitle() below).
  * ================================================================================= */
 function getDashboardTitle() {
-    return "Student Expense Tracker";
+    return "Expense Categories Overview";
 }
 /* ============================== END OF SHARED FUNCTION ============================ */
 
